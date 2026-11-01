@@ -1,0 +1,517 @@
+import json
+import os
+
+corpus = {
+    "Malignant_Melanoma": {
+        "tier": "Tier 1",
+        "urgency": "High Urgency (Oncology)",
+        "clinical_name": "Malignant Melanoma",
+        "icd10": "C43.9",
+        "pathophysiology": "Aggressive cutaneous malignancy arising from the malignant transformation of epidermal melanocytes at the dermo-epidermal junction. Driven by ultraviolet-induced DNA damage, BRAF V600E mutations (50%), and NRAS/KIT alterations, displaying high potential for rapid vertical invasion and lymphatic micrometastasis.",
+        "morphology": {
+            "hallmarks": "ABCDE criteria: Asymmetry, Border irregularity (notched/scalloped), Color variegation (black, brown, blue-gray, red, hypopigmented areas), Diameter (>6 mm, though early lesions may be smaller), and Evolution (rapid change in size, shape, elevation, or bleeding).",
+            "fitzpatrick_light": "Pronounced erythema, pink-to-tan shades, obvious asymmetric dark pigment halos on sun-exposed zones (back, legs).",
+            "fitzpatrick_dark": "Acral lentiginous subtype prevalent on palms, soles, and subungual beds. Pigment appears dark brown to jet-black; erythema may be hidden. Longitudinal melanonychia (>3 mm, Hutchinson sign on proximal nail fold) is a key alert."
+        },
+        "diagnostic_workup": [
+            "Immediate dermoscopic assessment for atypical pigment network, regression structures, and blue-white veil.",
+            "Complete narrow-margin (1-2 mm) excisional biopsy down to subcutaneous fat (avoid superficial shave biopsy to preserve Breslow depth measurement).",
+            "Histopathological evaluation with Breslow thickness, ulceration status, and mitotic rate determination.",
+            "Sentinel lymph node biopsy (SLNB) if Breslow depth >0.8 mm or ulcerated."
+        ],
+        "management": "Surgical wide local excision with safety margins tailored to Breslow thickness (0.5-2.0 cm). Targeted therapies (BRAF/MEK inhibitors) and immune checkpoint blockade (anti-PD-1, anti-CTLA-4) for advanced stages.",
+        "red_flags": "Do not perform destructive electrodessication or cryotherapy without tissue biopsy. Rapid vertical growth or satellite nodule eruption demands expedited surgical oncology consult within 7-14 days."
+    },
+    "Kaposi_Sarcoma": {
+        "tier": "Tier 1",
+        "urgency": "High Urgency (Oncology/Infectious)",
+        "clinical_name": "Kaposi Sarcoma",
+        "icd10": "C46.0",
+        "pathophysiology": "Angioproliferative spindle cell vascular neoplasm induced by Human Herpesvirus 8 (HHV-8 / KSHV) infection in the context of immune compromise (HIV/AIDS, organ transplantation, or endemic African types). Involves hyper-activation of VEGF and cytokines causing aberrant lymphatic vessel proliferation.",
+        "morphology": {
+            "hallmarks": "Multifocal violaceous, red-purple, or brown macules, plaques, and nodules typically along Langer lines. Lesions may progress to ulcerated fungating vascular masses with prominent lymphedema.",
+            "fitzpatrick_light": "Distinct pink-purple to blue-red vascular lesions, non-blanching with diascopy.",
+            "fitzpatrick_dark": "Dark brown, hyperpigmented, or black violaceous firm plaques and woody induration often accompanied by painful dependent lower-limb edema."
+        },
+        "diagnostic_workup": [
+            "Full-thickness punch biopsy showing slit-like vascular spaces lined by spindle cells with extravasated erythrocytes and hemosiderin.",
+            "Immunohistochemistry positive for HHV-8 LANA-1 and endothelial markers (CD31, CD34, D2-40).",
+            "HIV ELISA / viral load testing and CD4+ T-cell count staging.",
+            "Endoscopy and chest imaging if visceral or mucosal involvement is suspected."
+        ],
+        "management": "Systemic Antiretroviral Therapy (ART) is frontline in HIV-associated cases. Local therapies (intralesional vinblastine, radiation therapy, alitretinoin gel) for isolated skin disease. Liposomal doxorubicin for extensive symptomatic or visceral disease.",
+        "red_flags": "Oral mucosal lesions indicate high risk of gastrointestinal and pulmonary hemorrhage. Rule out opportunistic coinfections."
+    },
+    "Bullous_Pemphigoid": {
+        "tier": "Tier 1",
+        "urgency": "High Urgency (Autoimmune)",
+        "clinical_name": "Bullous Pemphigoid",
+        "icd10": "L12.0",
+        "pathophysiology": "Autoimmune blistering dermatosis predominantly affecting the elderly, characterized by pathogenic autoantibodies targeting hemidesmosomal adhesion proteins BP180 (type XVII collagen) and BP230 in the epidermal basement membrane zone. Complement fixation recruits eosinophils, triggering subepidermal split.",
+        "morphology": {
+            "hallmarks": "Tense, fluid-filled bullae on erythematous or normal-appearing skin, typically on flexor extremities, abdomen, and groin. Negative Nikolsky sign (lateral pressure does not slough intact skin). Preceded by intensely pruritic urticarial prodrome.",
+            "fitzpatrick_light": "Bright red urticarial plaques with clear or serosanguinous tense blisters.",
+            "fitzpatrick_dark": "Violaceous or dark brown edematous plaques with prominent post-inflammatory hyperpigmentation; bullae may appear darker with cloudy contents."
+        },
+        "diagnostic_workup": [
+            "Perilesional punch biopsy for Direct Immunofluorescence (DIF): reveals continuous linear IgG and C3 deposition along the basement membrane zone.",
+            "Lesional biopsy for histology: demonstrates subepidermal clefting with eosinophil-rich dermal infiltrates.",
+            "Serological ELISA testing for anti-BP180 NC16A and anti-BP230 antibodies."
+        ],
+        "management": "Superpotent topical corticosteroids (clobetasol propionate cream 20-30 g/day) are frontline with lower systemic adverse effects than oral steroids. Oral prednisone, doxycycline plus nicotinamide, or methotrexate/mycophenolate mofetil for recalcitrant cases.",
+        "red_flags": "Severe denudation poses risk of fluid imbalance and secondary bacterial sepsis. Screen for drug triggers (gliptins/DPP-4 inhibitors, furosemide, PD-1 checkpoint inhibitors)."
+    },
+    "Cellulitis": {
+        "tier": "Tier 1",
+        "urgency": "High Urgency (Severe Bacterial)",
+        "clinical_name": "Cellulitis",
+        "icd10": "L03.90",
+        "pathophysiology": "Acute deep dermal and subcutaneous bacterial infection commonly caused by Streptococcus pyogenes (Group A Strep) and Staphylococcus aureus (including MRSA). Entry occurs through micro-fissures, tinea pedis, ulcers, or trauma, with rapid lymphatic spread.",
+        "morphology": {
+            "hallmarks": "Expanding, warm, tender, erythematous plaque with poorly defined borders, prominent edema ('peau d'orange'), and localized lymphadenopathy.",
+            "fitzpatrick_light": "Bright unilateral redness, warmth, and ascending lymphangitic streaks.",
+            "fitzpatrick_dark": "Erythema may appear dusky, hyperpigmented, or subtle gray-brown. Rely heavily on tactile warmth, localized tenderness, unilateral taut edema, and systemic fever."
+        },
+        "diagnostic_workup": [
+            "Clinical evaluation marking border progression with a surgical pen to measure response over 24-48 hours.",
+            "Inspect interdigital toe webs for tinea pedis maceration (primary portal of entry in lower-limb cellulitis).",
+            "CBC showing leukocytosis with left shift, elevated CRP/ESR. Blood cultures if febrile or immunocompromised.",
+            "Duplex Doppler ultrasound if deep vein thrombosis (DVT) cannot be ruled out clinically."
+        ],
+        "management": "Empirical systemic antibacterial coverage against Streptococcus and MSSA (cephalexin, amoxicillin-clavulanate, cefazolin). Add MRSA coverage (doxycycline, trimethoprim-sulfamethoxazole, vancomycin) in purulent or high-risk settings. Limb elevation to promote lymphatic clearance.",
+        "red_flags": "Disproportionate pain, bullae, skin necrosis, crepitus, or rapid expansion suggests Necrotizing Fasciitis—requires urgent surgical debridement."
+    },
+    "Cutaneous_Vasculitis": {
+        "tier": "Tier 1",
+        "urgency": "High Urgency (Systemic / Inflammatory)",
+        "clinical_name": "Cutaneous Small Vessel Vasculitis",
+        "icd10": "L95.9",
+        "pathophysiology": "Immune-complex-mediated inflammation and necrosis of post-capillary venule walls (leukocytoclastic vasculitis). Neutrophilic infiltration causes vessel wall fibrinoid necrosis and erythrocyte extravasation. Triggered by systemic autoimmune diseases (SLE, RA), infections, medications, or malignancy.",
+        "morphology": {
+            "hallmarks": "Palpable purpura (non-blanching raised hemorrhagic papules), typically symmetrical and gravity-dependent on the lower extremities, ankles, and feet. May coalesce into necrosis or ulcerations.",
+            "fitzpatrick_light": "Distinct red-to-purple non-blanching macules and palpable papules.",
+            "fitzpatrick_dark": "Dark purple-brown or black palpable lesions; non-blanching feature confirmed with diascopy (glass slide compression)."
+        },
+        "diagnostic_workup": [
+            "Punch biopsy of an active lesion <24-48 hours old for histology (shows leukocytoclasia, nuclear dust, fibrinoid necrosis) and DIF (IgA for Henoch-Schönlein purpura/IgA vasculitis, IgG/C3).",
+            "Urinalysis with microscopy to check for microscopic hematuria/proteinuria (evaluates renal vasculitis).",
+            "Comprehensive systemic screen: ANA, ANCA, cryoglobulins, hepatitis B/C serologies, serum creatinine, and complement levels (C3, C4)."
+        ],
+        "management": "Identify and remove inciting drug or treat underlying infection. Rest, leg elevation, and compression for mild cutaneous-limited cases. Systemic corticosteroids (prednisone), colchicine, dapsone, or immunosuppressive agents for severe or ulcerating disease.",
+        "red_flags": "Hematuria, severe abdominal angina, or peripheral neuropathy indicates life-threatening systemic organ vasculitis."
+    },
+    "Exanthems_and_Drug_Eruptions": {
+        "tier": "Tier 1",
+        "urgency": "High Urgency (Adverse Drug Reaction)",
+        "clinical_name": "Adverse Drug Reaction / Severe Exanthem",
+        "icd10": "L27.0",
+        "pathophysiology": "T-cell-mediated hypersensitivity reaction (Type IV) to systemic drugs (antibiotics, anticonvulsants, NSAIDs, allopurinol). Ranges from benign morbilliform exanthems to life-threatening Severe Cutaneous Adverse Reactions (SCAR) including DRESS syndrome, Stevens-Johnson Syndrome (SJS), and Toxic Epidermal Necrolysis (TEN).",
+        "morphology": {
+            "hallmarks": "Symmetric, widespread erythematous maculopapular eruption starting on the trunk and spreading centrifugally to extremities within 1-2 weeks of new drug initiation. In SJS/TEN: atypical targetoid lesions with epidermal necrolysis and mucosal detachment.",
+            "fitzpatrick_light": "Confluent bright pink-red morbilliform eruption with face and mucosal sparing in uncomplicated cases.",
+            "fitzpatrick_dark": "Confluent hyperpigmented or violaceous macules with dusky center; mucosal involvement (lips, conjunctiva) is critical for early SJS/TEN detection."
+        },
+        "diagnostic_workup": [
+            "Complete medication timeline mapping for the preceding 2 to 8 weeks.",
+            "Inspect mucosal membranes (oral, ocular, urogenital) for erosion or blister formation.",
+            "CBC with differential (eosinophilia >700/μL and atypical lymphocytosis suggest DRESS).",
+            "Liver function tests (ALT/AST), renal function, and skin biopsy to differentiate benign exanthem from full-thickness necrolysis."
+        ],
+        "management": "Immediate withdrawal of the suspect culprit medication. Supportive therapy, antihistamines, and mid-to-high potency topical steroids for simple exanthems. Intensive care / burn unit transfer and systemic immunomodulation (IVIG, cyclosporine) for SJS/TEN.",
+        "red_flags": "Facial edema, fever >38.5°C, lymphadenopathy, skin tenderness, or mucosal erosions are red flags for DRESS or SJS/TEN."
+    },
+    "Herpes_HPV_and_STDs": {
+        "tier": "Tier 1",
+        "urgency": "High Urgency (Infectious / Communicable)",
+        "clinical_name": "Herpes Simplex / Zoster & Mucocutaneous STDs",
+        "icd10": "B00.9 / B02.9",
+        "pathophysiology": "Viral infection by HSV-1/HSV-2 (recurrent intraepidermal ballooning degeneration) or VZV (reactivation in dorsal root ganglia). Or infectious sexually transmitted ulcerations (Syphilis Treponema pallidum) requiring strict public health contact tracing.",
+        "morphology": {
+            "hallmarks": "Herpes: Grouped umbilicated vesicles on an erythematous base ('dewdrops on a rose petal') with dermatomal distribution in Zoster. Syphilis: Indurated, painless solitary chancre (primary) or diffuse non-pruritic palmoplantar copper-colored papules (secondary).",
+            "fitzpatrick_light": "Clear vesicles clustered over distinct red inflammatory patches.",
+            "fitzpatrick_dark": "Vesicles on violaceous or hyperpigmented bases; post-inflammatory hyperpigmentation is pronounced following crusting."
+        },
+        "diagnostic_workup": [
+            "HSV/VZV PCR swab of active vesicle base (gold standard for viral typing).",
+            "Tzanck smear demonstrating multinucleated giant cells and acantholytic keratinocytes.",
+            "Serologic screening: RPR / VDRL and treponemal antibody (FTA-ABS / TP-PA) to rule out secondary syphilis.",
+            "HIV testing offered as part of comprehensive sexual health screening."
+        ],
+        "management": "Oral antivirals (valacyclovir 1000 mg tid for Zoster or 500-1000 mg bid for HSV) initiated within 72 hours of symptom onset. Benzathine penicillin G for Treponema pallidum. Supportive analgesia for postherpetic neuralgia.",
+        "red_flags": "Ophthalmic branch Zoster (Hutchinson sign: vesicle on tip of nose) threatens vision—urgent ophthalmology consult needed to prevent keratitis."
+    },
+    "Impetigo_and_Bacterial": {
+        "tier": "Tier 1",
+        "urgency": "High Urgency (Contagious Bacterial)",
+        "clinical_name": "Impetigo & Pyoderma",
+        "icd10": "L01.0",
+        "pathophysiology": "Superficial epidermal bacterial infection primarily caused by Staphylococcus aureus and Streptococcus pyogenes. Bacterial exfoliative toxins (ETA, ETB) cleave desmoglein-1 in the granular layer, resulting in fragile intraepidermal blisters and contagious exudation.",
+        "morphology": {
+            "hallmarks": "Non-bullous impetigo: Fragile pustules and vesicles that rupture rapidly, leaving pathognomonic honey-colored (amber) stuck-on crusts, classically around the mouth, nose, and exposed extremities. Bullous impetigo: Flaccid transparent bullae.",
+            "fitzpatrick_light": "Bright yellow-amber crusts over red eroded base.",
+            "fitzpatrick_dark": "Crusts may appear darker amber-brown; surrounding skin displays post-inflammatory hyperpigmentation with peripheral scaling collarette."
+        },
+        "diagnostic_workup": [
+            "Clinical diagnosis supported by bacterial culture and antimicrobial susceptibility testing of exudate beneath crust.",
+            "Rule out underlying predisposing eczema (impetiginized atopic dermatitis) or scabies.",
+            "Urinalysis in post-streptococcal regions if nephritogenic strains are endemic."
+        ],
+        "management": "Topical mupirocin 2% or ozenoxacin 1% ointment tid for localized lesions. Oral antibiotics (cephalexin or amoxicillin-clavulanate; trimethoprim-sulfamethoxazole or clindamycin if MRSA suspected) for widespread or bullous disease. Strict hand hygiene.",
+        "red_flags": "Facial edema or dark cola-colored urine 1-3 weeks later suggests post-streptococcal glomerulonephritis."
+    },
+    "Systemic_Disease_Manifestations": {
+        "tier": "Tier 1",
+        "urgency": "High Urgency (Systemic / Metabolic)",
+        "clinical_name": "Cutaneous Manifestations of Systemic Disease",
+        "icd10": "L98.9",
+        "pathophysiology": "Dermatological signs serving as sentinel markers for underlying internal pathology, endocrine disorders (diabetes necrobiosis lipoidica, acanthosis nigricans), lipid metabolism defects (eruptive xanthomas), inflammatory bowel disease (pyoderma gangrenosum), or internal malignancies (paraneoplastic syndromes).",
+        "morphology": {
+            "hallmarks": "Acanthosis nigricans: Velvety hyperpigmented cutaneous thickening in intertriginous folds. Pyoderma gangrenosum: Rapidly expanding painful ulcer with violaceous undermined borders. Xanthomas: Waxy yellow papules with erythematous halo.",
+            "fitzpatrick_light": "Yellow-orange lipids or bright purple-red undermined ulcer borders.",
+            "fitzpatrick_dark": "Deep brownish-black velvety plaques; ulcers show prominent hyperpigmented borders with cribriform scarring."
+        },
+        "diagnostic_workup": [
+            "Fasting lipid panel and hemoglobin A1c to evaluate metabolic syndrome / insulin resistance.",
+            "Full-thickness incisional biopsy of advancing edge for suspected pyoderma gangrenosum or deep panniculitis.",
+            "Age-appropriate malignancy screening if rapid-onset paraneoplastic manifestation is suspected.",
+            "Multidisciplinary referral to endocrinology, rheumatology, or gastroenterology."
+        ],
+        "management": "Primary treatment targets the underlying systemic etiology. Local wound care and immunosuppression (systemic steroids, cyclosporine, anti-TNF agents) for pyoderma gangrenosum.",
+        "red_flags": "Do not debride pyoderma gangrenosum—it exhibits pathergy (worsening with surgical trauma)."
+    },
+    "Systemic_Lupus_Erythematosus": {
+        "tier": "Tier 1",
+        "urgency": "High Urgency (Autoimmune / Systemic)",
+        "clinical_name": "Cutaneous / Systemic Lupus Erythematosus",
+        "icd10": "L93.0 / M32.9",
+        "pathophysiology": "Autoimmune connective tissue disease characterized by autoantibodies against nuclear antigens (ANA, anti-dsDNA, anti-Smith) and UV-triggered keratinocyte apoptosis. Interface dermatitis with basal vacuolization and dermal mucin deposition leads to tissue damage.",
+        "morphology": {
+            "hallmarks": "Acute Cutaneous Lupus: Pathognomonic malar (butterfly) rash covering cheeks and nasal bridge, classically SPARING the nasolabial folds. Discoid Lupus: Scarring, coin-shaped indurated erythematous plaques with follicular plugging, central atrophy, and pigmentary changes.",
+            "fitzpatrick_light": "Bright pink-to-red confluent erythema across facial convexities.",
+            "fitzpatrick_dark": "Discoid lesions show marked peripheral hyperpigmentation, central porcelain-white hypopigmentation/atrophy, and permanent cicatricial alopecia on scalp."
+        },
+        "diagnostic_workup": [
+            "Punch biopsy with Direct Immunofluorescence (Lupus Band Test): continuous granular IgG/IgM/C3 deposition along dermo-epidermal junction in both lesional and sun-exposed non-lesional skin.",
+            "Serological workup: ANA (high sensitivity), anti-dsDNA and anti-Smith (high specificity), anti-Ro/SSA, anti-La/SSB, and complement levels (low C3/C4).",
+            "Urinalysis, spot urine protein/creatinine ratio, and serum creatinine to screen for lupus nephritis."
+        ],
+        "management": "Strict photoprotection (broad-spectrum SPF 50+, UV protective clothing). Hydroxychloroquine (200-400 mg daily, max 5 mg/kg actual body weight) is the cornerstone therapy. Topical calcineurin inhibitors or steroids for acute facial lesions. Systemic immunosuppression for organ involvement.",
+        "red_flags": "Active lupus nephritis, pleuritis, or central nervous system lupus warrants immediate hospital-based rheumatology admission."
+    },
+    "Vascular_Tumors": {
+        "tier": "Tier 1",
+        "urgency": "High Urgency (Vascular Neoplasm)",
+        "clinical_name": "Vascular Tumors & Hemangiomas",
+        "icd10": "D18.0",
+        "pathophysiology": "Benign and borderline endothelial cell proliferations, including Infantile Hemangiomas (GLUT-1 positive clonal endothelial growth with proliferation and involution phases) and Pyogenic Granulomas (lobular capillary hemangiomas secondary to minor trauma or hormonal shifts).",
+        "morphology": {
+            "hallmarks": "Infantile Hemangioma: Bright red, lobulated, raised strawberry-like nodule that blanches partially. Pyogenic Granuloma: Rapidly growing, solitary, dome-shaped red vascular papule with a distinct collarette of scale, prone to profuse recurrent bleeding.",
+            "fitzpatrick_light": "Bright cherry-red to crimson vascular lesions with prominent capillary networks.",
+            "fitzpatrick_dark": "Red-purple to dusky brownish nodules; bleeding tendency is the defining clinical clue."
+        },
+        "diagnostic_workup": [
+            "Clinical evaluation with diascopy and palpation (compressible vs non-pulsatile).",
+            "Doppler ultrasound to characterize vascular flow velocity and rule out high-flow arteriovenous malformations.",
+            "Histopathology with GLUT-1 immunostaining to differentiate infantile hemangioma from vascular malformations.",
+            "MRI if periocular, lumbosacral (PHACES or LUMBAR syndrome), or airway lesions are present."
+        ],
+        "management": "Oral propranolol (2-3 mg/kg/day) is the gold standard for proliferating infantile hemangiomas requiring intervention. Shave excision with curettage and base electrodessication for bleeding pyogenic granulomas.",
+        "red_flags": "Periocular hemangiomas can cause amblyopia (visual deprivation). Beard-distribution hemangiomas carry high risk of subglottic airway involvement."
+    },
+    "Actinic_Keratosis_and_Malignancies": {
+        "tier": "Tier 1",
+        "urgency": "High Urgency (Pre-Malignant / Oncology)",
+        "clinical_name": "Actinic Keratosis & Non-Melanoma Skin Cancer",
+        "icd10": "L57.0 / C44.9",
+        "pathophysiology": "Cumulative UV-induced TP53 mutations in basal keratinocytes. Actinic Keratosis represents intraepidermal dysplasia with potential progression to invasive Cutaneous Squamous Cell Carcinoma (cSCC). Basal Cell Carcinoma (BCC) arises from PTCH1 mutations in the Hedgehog pathway.",
+        "morphology": {
+            "hallmarks": "Actinic Keratosis: Rough, sandpaper-textured, scaly, adherent erythematous macules on sun-damaged skin. BCC: Pearly papule with rolled border, central arborizing telangiectasias, and ulceration. cSCC: Hyperkeratotic, indurated, tender nodule.",
+            "fitzpatrick_light": "Erythematous base with white-yellow adherent gritty scale on face, scalp, and dorsal hands.",
+            "fitzpatrick_dark": "Pigmented BCC/SCC common: pearly brown-to-black nodule mimicking melanoma; actinic keratoses present as pigmented scaly plaques."
+        },
+        "diagnostic_workup": [
+            "Dermoscopy: 'strawberry' pattern in AK; arborizing vessels and blue-gray ovoid nests in BCC; keratin pearls and hairpin vessels in cSCC.",
+            "Shave or punch biopsy including reticular dermis to evaluate invasion depth.",
+            "Histological margin assessment (Mohs micrographic surgery evaluation for high-risk facial sites)."
+        ],
+        "management": "Field therapy for multiple AKs (fluorouracil 5% cream, imiquimod 5%, cryotherapy with liquid nitrogen). Surgical excision or Mohs surgery for invasive BCC/cSCC. Photodynamic therapy (PDT) for superficial widespread lesions.",
+        "red_flags": "Rapid induration, tenderness, or size >2 cm indicates invasive squamous cell carcinoma with metastatic potential."
+    },
+    "Acne_Vulgaris": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Outpatient)",
+        "clinical_name": "Acne Vulgaris",
+        "icd10": "L70.0",
+        "pathophysiology": "Multifactorial chronic inflammation of the pilosebaceous unit involving follicular hyperkeratinization, Cutibacterium acnes proliferation within microcomedones, androgen-stimulated sebum production, and inflammatory cytokine cascades.",
+        "morphology": {
+            "hallmarks": "Pleomorphic lesions: closed comedones (whiteheads), open comedones (blackheads), inflammatory erythematous papules, pustules, and deep painful nodules or cysts on face, chest, and upper back.",
+            "fitzpatrick_light": "Bright pink-red inflammatory papules and erythematous pustules.",
+            "fitzpatrick_dark": "Prominent post-inflammatory hyperpigmentation (PIH) that may outlast active lesions by months; higher risk of keloidal and hypertrophic scarring."
+        },
+        "diagnostic_workup": [
+            "Clinical grading (mild comedonal vs moderate papulopustular vs severe nodulocystic).",
+            "Screen for signs of hyperandrogenism (PCOS: hirsutism, irregular menses, severe recalcitrant acne in females).",
+            "Differentiate from rosacea, perioral dermatitis, and pityrosporum folliculitis."
+        ],
+        "management": "Topical retinoids (adapalene, tretinoin) plus benzoyl peroxide as foundational therapy. Add topical clindamycin or oral doxycycline for inflammatory lesions. Oral isotretinoin for severe nodulocystic, scarring, or treatment-refractory acne.",
+        "red_flags": "Acne fulminans: sudden ulcerating acne with systemic fever and joint pain requires urgent systemic corticosteroids and hospital care."
+    },
+    "Alopecia_Areata_and_Hair_Loss": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Outpatient)",
+        "clinical_name": "Alopecia Areata & Non-Scarring Hair Loss",
+        "icd10": "L63.9 / L65.9",
+        "pathophysiology": "T-cell-mediated autoimmune attack collapsing the immune privilege of anagen hair follicles, leading to premature catagen transition. Telogen effluvium and androgenetic alopecia involve physiological stress shedding or DHT-mediated follicular miniaturization.",
+        "morphology": {
+            "hallmarks": "Alopecia areata: Well-demarcated smooth round patches of hair loss with normal underlying scalp. Dermoscopy shows pathognomonic exclamation-mark hairs (thinned proximally), yellow dots, and black dots.",
+            "fitzpatrick_light": "Smooth ivory or peach-colored bald patches with preserved follicular ostia.",
+            "fitzpatrick_dark": "Scalp may show follicular hyperpigmentation; differentiate carefully from cicatricial alopecias common in dark skin (e.g., Central Centrifugal Cicatricial Alopecia - CCCA)."
+        },
+        "diagnostic_workup": [
+            "Trichoscopy / Dermoscopy to confirm follicular ostia preservation (non-scarring vs scarring).",
+            "Gentle hair pull test at patch margin to assess active disease shedding.",
+            "Serum ferritin, TSH, and vitamin D levels to rule out systemic metabolic triggers.",
+            "Scalp punch biopsy (4 mm cross-sectional) if distinction from cicatricial alopecia is uncertain."
+        ],
+        "management": "Intralesional triamcinolone acetonide (5 mg/mL) injections every 4-6 weeks for localized patches. High-potency topical steroids or topical minoxidil 5%. Oral JAK inhibitors (baricitinib, ritlecitinib) for severe alopecia areata totalis/universalis.",
+        "red_flags": "Loss of follicular ostia, perifollicular erythema, or tufting indicates scarring (cicatricial) alopecia—requires prompt biopsy to prevent permanent loss."
+    },
+    "Atopic_Dermatitis_and_Eczema": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Outpatient)",
+        "clinical_name": "Atopic Dermatitis & Eczematous Dermatoses",
+        "icd10": "L20.9",
+        "pathophysiology": "Chronic relapsing inflammatory skin disease driven by epidermal barrier breakdown (filaggrin FLG loss-of-function mutations) and Th2-skewed immune activation (IL-4, IL-13, IL-31), leading to trans-epidermal water loss and relentless pruritus.",
+        "morphology": {
+            "hallmarks": "Intensely pruritic, poorly demarcated erythematous patches with excoriations, xerosis, and lichenification. Characteristic flexural predilection (antecubital and popliteal fossae, neck, wrists) in children and adults; extensor surfaces in infants.",
+            "fitzpatrick_light": "Bright pink-to-red ill-defined scaly plaques with microvesiculation.",
+            "fitzpatrick_dark": "Hyperpigmented, violaceous, or ashy-gray indurated plaques with follicular prominence ('follicular eczema') and extensive post-inflammatory pigmentary changes."
+        },
+        "diagnostic_workup": [
+            "Hanifin and Rajka diagnostic criteria (pruritus, typical morphology/distribution, chronic course, atopic personal/family history).",
+            "Serum total IgE and specific allergen testing if allergic triggers suspected.",
+            "Skin swab for bacterial culture if weeping, honey-crusting, or pustules present (secondary staphylococcal colonization)."
+        ],
+        "management": "Liberal emollient application within 3 minutes of bathing ('soak and seal'). Topical corticosteroids (low-to-mid potency) for flares; topical calcineurin inhibitors (tacrolimus) or PDE4 inhibitor (crisaborole) for face/sensitive areas. Targeted biologics (dupilumab, tralokinumab) or oral JAK inhibitors for moderate-to-severe disease.",
+        "red_flags": "Sudden eruption of monomorphic punched-out umbilicated vesicles indicates Eczema Herpeticum (HSV superinfection)—urgent oral/IV acyclovir required."
+    },
+    "Chronic_Urticaria": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Outpatient)",
+        "clinical_name": "Chronic Spontaneous Urticaria",
+        "icd10": "L50.8",
+        "pathophysiology": "Cutaneous mast cell and basophil degranulation with histamine, leukotriene, and platelet-activating factor release causing transient dermal edema (wheals) and vasodilation. Chronic cases (>6 weeks) often involve autoimmune IgG autoantibodies targeting FcεRI or IgE.",
+        "morphology": {
+            "hallmarks": "Transient, intensely pruritic, edematous erythematous wheals with central pallor, resolving completely without bruising or scarring within 24 hours. May be accompanied by angioedema (deeper dermal/subcutaneous swelling) in 40-50% of patients.",
+            "fitzpatrick_light": "Erythematous borders with white, elevated, blanched centers.",
+            "fitzpatrick_dark": "Fleshy, edematous, elevated plaques that may appear flesh-colored to slightly hyperpigmented with subtle border erythema."
+        },
+        "diagnostic_workup": [
+            "Confirm that individual wheals resolve within 24 hours (if individual lesions persist >24-48 hours with bruising, rule out Urticarial Vasculitis with biopsy).",
+            "CBC, ESR/CRP, and thyroid autoantibodies (anti-TPO) to rule out autoimmune thyroiditis.",
+            "Screen for physical triggers (dermographism, cold, heat, pressure)."
+        ],
+        "management": "Second-generation non-sedating H1-antihistamines (cetirizine, fexofenadine, bilastine) up to 4x standard dose. Add omalizumab (anti-IgE biologic 300 mg subcutaneous monthly) for refractory cases. Short 3-5 day oral steroid burst only for severe acute distress.",
+        "red_flags": "Concomitant tongue swelling, stridor, wheezing, or hypotension indicates Anaphylaxis—immediate intramuscular epinephrine (0.3-0.5 mg) required."
+    },
+    "Contact_Dermatitis": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Outpatient)",
+        "clinical_name": "Contact Dermatitis (Allergic & Irritant)",
+        "icd10": "L23.9 / L24.9",
+        "pathophysiology": "Allergic Contact Dermatitis (ACD): Delayed Type IV cell-mediated hypersensitivity to low-molecular-weight haptens (nickel, fragrances, poison ivy urushiol). Irritant Contact Dermatitis (ICD): Direct non-immunological cytotoxic physical/chemical barrier disruption.",
+        "morphology": {
+            "hallmarks": "Pruritic, geometric, sharply demarcated erythematous papules, vesicles, and weeping plaques conforming strictly to the shape of exogenous contact (e.g., linear streaks from plant contact, rectangular patches beneath watch straps).",
+            "fitzpatrick_light": "Bright red microvesicular plaques with sharp demarcation.",
+            "fitzpatrick_dark": "Violaceous or dark brown scaly plaques; post-inflammatory hyperpigmentation prominent."
+        },
+        "diagnostic_workup": [
+            "Detailed occupational, cosmetic, topical medication, and hobby exposure history.",
+            "Patch testing (TRUE test panel) performed at least 6 weeks post-acute flare to identify specific causative haptens.",
+            "Distinguish from atopic dermatitis and dermatophyte fungal infections via KOH mount."
+        ],
+        "management": "Strict allergen/irritant avoidance and barrier restoration. High-potency topical corticosteroids (betamethasone dipropionate or clobetasol) for localized flares. Cool wet compresses for acute weeping stages.",
+        "red_flags": "Generalized systemic contact dermatitis following oral/systemic ingestion of related antigens."
+    },
+    "Melanocytic_Nevi": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Outpatient / Benign)",
+        "clinical_name": "Benign Melanocytic Nevi",
+        "icd10": "D22.9",
+        "pathophysiology": "Benign clonal proliferations of melanocytes arranged in nests within the epidermis (junctional), dermo-epidermal junction and dermis (compound), or solely within the dermis (intradermal). Governed by BRAF or NRAS mutations followed by oncogene-induced cellular senescence.",
+        "morphology": {
+            "hallmarks": "Small (<6 mm), well-circumscribed, symmetric, uniformly pigmented round-to-oval macules, papules, or dome-shaped nodules with regular borders. Clinically compliant with the 'ugly duckling' rule (resembles patient's other moles).",
+            "fitzpatrick_light": "Light tan to uniform medium brown shade with stable architecture.",
+            "fitzpatrick_dark": "Uniform dark brown to black macules with regular, reticular or globular dermoscopic pigment networks."
+        },
+        "diagnostic_workup": [
+            "Dermoscopy confirming architectural symmetry, uniform pigment distribution, and absence of melanoma features (no atypical network, no regression).",
+            "Digital dermoscopic baseline mapping and periodic photography for patients with multiple atypical dysplastic nevi.",
+            "Full-thickness excisional biopsy if any lesion violates symmetry or deviates from the patient's signature nevi pattern."
+        ],
+        "management": "Reassurance and sun protection counseling. Routine prophylactic excision of typical stable nevi is not medically indicated.",
+        "red_flags": "An 'ugly duckling' mole that looks markedly distinct from surrounding moles, or any change in adult life, demands excisional biopsy."
+    },
+    "Onychomycosis_and_Nail_Disease": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Outpatient)",
+        "clinical_name": "Onychomycosis & Nail Dystrophy",
+        "icd10": "B35.1",
+        "pathophysiology": "Fungal infection of the nail bed and plate primarily caused by anthropophilic dermatophytes (Trichophyton rubrum, Trichophyton mentagrophytes) and non-dermatophyte molds. Nail keratin is enzymatically degraded, causing subungual hyperkeratosis and onycholysis.",
+        "morphology": {
+            "hallmarks": "Distal lateral subungual onychomycosis: Subungual hyperkeratotic debris, thickening of the nail plate, yellow-brown discoloration, onycholysis (separation of nail from bed), and brittleness.",
+            "fitzpatrick_light": "Yellow-white to amber-brown dystrophic crumbly nail plate.",
+            "fitzpatrick_dark": "Melanonychia (brown/black pigmentation of the nail plate) may accompany fungal dystrophy; must be distinguished from subungual melanoma."
+        },
+        "diagnostic_workup": [
+            "Microscopic KOH examination of subungual debris (demonstrates branching septate hyphae).",
+            "Fungal culture or nail plate clipping for Periodic Acid-Schiff (PAS) histology stain (most sensitive confirmatory test).",
+            "Rule out nail psoriasis (oil drop sign, pitting) and lichen planus."
+        ],
+        "management": "Oral terbinafine (250 mg daily for 6 weeks for fingernails, 12 weeks for toenails) with baseline and follow-up liver function monitoring. Topical ciclopirox 8% or efinaconazole 10% lacquer for mild distal disease or oral therapy contraindications.",
+        "red_flags": "Single digit melanonychia spreading to adjacent periungual skin (Hutchinson sign) is suspicious for subungual melanoma—mandates nail matrix biopsy."
+    },
+    "Psoriasis_and_Lichen_Planus": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Outpatient)",
+        "clinical_name": "Psoriasis Vulgaris & Lichenoid Dermatoses",
+        "icd10": "L40.0 / L43.9",
+        "pathophysiology": "Psoriasis: Chronic autoimmune inflammatory dermatosis mediated by the IL-23/IL-17 immune axis, causing accelerated keratinocyte hyperproliferation (4-day turnover). Lichen Planus: T-cell-mediated autoimmune cytotoxic destruction of basal layer keratinocytes.",
+        "morphology": {
+            "hallmarks": "Psoriasis: Well-demarcated erythematous plaques with thick, silvery-white micaceous scales on extensor surfaces (elbows, knees, scalp, lumbosacral). Pathognomonic Auspitz sign (punctate bleeding upon scale removal). Lichen Planus: Pruritic, Polygonal, Planar, Purple Papules (the 6 Ps) with Wickham striae.",
+            "fitzpatrick_light": "Bright salmon-pink plaques with bright silvery scale.",
+            "fitzpatrick_dark": "Plaques appear violaceous, dark gray-brown, or hyperpigmented; silvery scaling may be muted. Substantial post-inflammatory pigmentary alterations."
+        },
+        "diagnostic_workup": [
+            "Clinical diagnosis supported by examination of predilection sites (scalp, intergluteal cleft, nails for pitting/oil drop sign).",
+            "Skin punch biopsy if differentiation from eczema or cutaneous T-cell lymphoma is needed.",
+            "Screen for Psoriatic Arthritis (CASPAR criteria: joint stiffness, dactylitis, enthesitis in 20-30% of patients)."
+        ],
+        "management": "Topical high-potency corticosteroids combined with vitamin D3 analogues (calcipotriene) for localized disease. Narrowband UVB phototherapy. Systemic biologics targeting TNF-α, IL-17, or IL-23 for moderate-to-severe plaque psoriasis.",
+        "red_flags": "Never administer systemic corticosteroids for psoriasis—withdrawal triggers life-threatening generalized pustular or erythrodermic psoriasis."
+    },
+    "Rosacea": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Outpatient)",
+        "clinical_name": "Rosacea",
+        "icd10": "L71.9",
+        "pathophysiology": "Chronic centrofacial inflammatory dermatosis involving neurovascular dysregulation (aberrant facial flushing) and innate immune hyperactivity (cathelicidin LL-37 peptide upregulation) triggered by Demodex folliculorum mites, heat, alcohol, and spicy foods.",
+        "morphology": {
+            "hallmarks": "Persistent centrofacial erythema, telangiectasias, inflammatory papules and pustules with ABSENCE of comedones (distinguishing it from acne vulgaris). Subtypes: Erythematotelangiectatic, Papulopustular, Phymatous (rhinophyma), and Ocular.",
+            "fitzpatrick_light": "Prominent central facial flushing, visible branching telangiectasias across cheeks and nose.",
+            "fitzpatrick_dark": "Flushing less obvious; presents as persistent facial warmth, hyperpigmented papules, and cutaneous thickening; easily misdiagnosed as recalcitrant acne."
+        },
+        "diagnostic_workup": [
+            "Clinical evaluation: centrofacial distribution, absence of comedones, and history of neurovascular flushing triggers.",
+            "Slit-lamp examination to rule out ocular rosacea (blepharitis, conjunctivitis, corneal neovascularization).",
+            "Skin scraping if Demodex mite overgrowth is clinically suspected."
+        ],
+        "management": "Trigger avoidance (UV light, hot beverages, spicy foods). Topical ivermectin 1%, metronidazole 0.75%, or azelaic acid 15% for papulopustular lesions. Oral sub-antimicrobial doxycycline (40 mg modified release daily) for systemic anti-inflammatory effect. Pulsed dye laser (PDL) for telangiectasias.",
+        "red_flags": "Corneal ulceration in ocular rosacea threatens visual acuity; prompt ophthalmology evaluation required."
+    },
+    "Scabies_and_Infestations": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Contagious Infestation)",
+        "clinical_name": "Scabies Infestation & Ectoparasites",
+        "icd10": "B86",
+        "pathophysiology": "Cutaneous infestation by the microscopic human itch mite Sarcoptes scabiei var. hominis. Female mites burrow into the stratum corneum to deposit eggs and feces (scybala), triggering a delayed Type IV hypersensitivity allergic reaction after 3-6 weeks.",
+        "morphology": {
+            "hallmarks": "Intense nocturnal pruritus disproportionate to clinical findings. Pathognomonic serpiginous burrows (2-15 mm thin raised tracks) in web spaces of fingers, flexor wrists, axillae, umbilicus, and genitalia. Secondary excoriations, eczematous dermatitis, and impetiginization.",
+            "fitzpatrick_light": "Pink-red inflammatory papules with subtle gray-white curvilinear burrows.",
+            "fitzpatrick_dark": "Hyperpigmented papules and nodular scabies on scrotum/groin; burrows appear as darker pigmented lines."
+        },
+        "diagnostic_workup": [
+            "Mineral oil skin scraping of a fresh burrow viewed under light microscopy to visualize mites, eggs, or fecal pellets.",
+            "Dermoscopy: 'delta-wing jet' or 'hang-glider' sign representing the pigmented triangular anterior body of the female mite at the burrow head.",
+            "Burrow ink test (rubbing washable ink over suspected burrow and wiping clean)."
+        ],
+        "management": "Topical permethrin 5% cream applied from jawline down to soles, left on for 8-14 hours and repeated in 7 days. Oral ivermectin (200 μg/kg taken on Day 1 and Day 8) for institutional outbreaks or crusted scabies. Simultaneously treat ALL household contacts and wash bedding in hot water (>60°C).",
+        "red_flags": "Crusted (Norwegian) scabies in immunocompromised patients exhibits millions of mites with thick crusts—highly contagious and requires isolation."
+    },
+    "Seborrheic_Keratosis": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Outpatient / Benign)",
+        "clinical_name": "Seborrheic Keratosis",
+        "icd10": "L82.1",
+        "pathophysiology": "Extremely common benign epithelial skin tumor resulting from clonal proliferation of mature keratinocytes with FGFR3 or PIK3CA activating mutations. Characterized by acanthosis, hyperkeratosis, and pseudohorn cysts.",
+        "morphology": {
+            "hallmarks": "Well-demarcated, round-to-oval, verrucous or warty plaque with a distinctive 'stuck-on' appearance, varying from flesh-colored to tan, brown, or jet black. Greasy or crumbly surface.",
+            "fitzpatrick_light": "Light yellow-tan to dark brown verrucous waxy plaques.",
+            "fitzpatrick_dark": "Dermatosis Papulosa Nigra: multiple small (1-3 mm) smooth dark brown-black hyperpigmented papules on cheeks and neck."
+        },
+        "diagnostic_workup": [
+            "Dermoscopy confirming multiple horn pseudocysts (milia-like cysts), comedo-like openings, and cerebriform / brain-like fissure pattern.",
+            "Absence of atypical pigment network, streaks, or blue-white veil.",
+            "Biopsy indicated if lesion shows irregular pigmentation, asymmetry, or bleeding to rule out melanoma."
+        ],
+        "management": "Benign lesions require no medical treatment. Cryotherapy, shave excision, or electrodessication for cosmetically bothersome or irritated lesions.",
+        "red_flags": "Sign of Leser-Trélat: sudden eruption of hundreds of seborrheic keratoses is a paraneoplastic sign of internal adenocarcinoma (typically gastric)."
+    },
+    "Tinea_and_Fungal_Infections": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Superficial Fungal)",
+        "clinical_name": "Dermatophytosis / Tinea Infections",
+        "icd10": "B35.9",
+        "pathophysiology": "Superficial cutaneous fungal infection of keratinized tissue caused by dermatophytes (Trichophyton, Microsporum, Epidermophyton species) or Malassezia yeasts. Keratinases digest host keratin, producing active peripheral expanding inflammation.",
+        "morphology": {
+            "hallmarks": "Annular, ring-shaped erythematous plaque with a raised, scaly, advancing border and central clearing ('ringworm'). Pityriasis versicolor: Hypopigmented or hyperpigmented finely scaly macules coalescing on trunk.",
+            "fitzpatrick_light": "Bright pink-red borders with fine white scaling.",
+            "fitzpatrick_dark": "Hyperpigmented border with subtle grayish scaling; hypopigmented patches in tinea versicolor are especially noticeable on tanned/dark skin."
+        },
+        "diagnostic_workup": [
+            "Potassium hydroxide (KOH 10-20%) mount of active scale from the advancing margin: demonstrates branching, septate hyphae and arthroconidia.",
+            "Wood's lamp examination: yellow-gold fluorescence for Malassezia (tinea versicolor); bright green for Microsporum.",
+            "Fungal culture on Sabouraud dextrose agar for atypical or recalcitrant infections."
+        ],
+        "management": "Topical allylamines (terbinafine 1%) or azoles (clotrimazole, ketoconazole) applied bid for 2-4 weeks extending 2 cm beyond margin. Oral terbinafine (250 mg daily for 2-4 weeks) or itraconazole for extensive, inflammatory, or recalcitrant tinea corporis/cruris.",
+        "red_flags": "Tinea incognito: Application of topical corticosteroids masks fungal signs, causing bizarre flare and deep dermal invasion—NEVER apply steroids on fungal rings."
+    },
+    "Viral_Warts_and_Molluscum": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Outpatient / Benign Viral)",
+        "clinical_name": "Verrucae (Warts) & Molluscum Contagiosum",
+        "icd10": "B07.9 / B08.1",
+        "pathophysiology": "Verrucae: Benign epidermal hyperplasia caused by Human Papillomavirus (HPV types 1, 2, 4, 7). Molluscum Contagiosum: Poxvirus infection infecting keratinocyte cytoplasm to form large inclusion bodies (molluscum bodies).",
+        "morphology": {
+            "hallmarks": "Verruca Vulgaris: Hyperkeratotic, exophytic papules with a rough, verrucous surface and pathognomonic pinpoint black dots (thrombosed dermal capillaries). Molluscum: Firm, dome-shaped, pearly, umbilicated papules (2-5 mm) with a central core.",
+            "fitzpatrick_light": "Flesh-colored to grayish verrucous papules; pink pearly molluscum.",
+            "fitzpatrick_dark": "Hyperpigmented or flesh-toned papules; prominent post-inflammatory hyperpigmentation after clearance."
+        },
+        "diagnostic_workup": [
+            "Clinical inspection; paring down hyperkeratosis reveals pinpoint punctate bleeding (distinguishes verruca from calluses).",
+            "Dermoscopy shows frog-spawn pattern and red/black dots.",
+            "Biopsy only required for recalcitrant, atypical, or genital lesions to rule out dysplasia (condyloma acuminata)."
+        ],
+        "management": "Salicylic acid topical preparations (17-40%) combined with paring. Cryotherapy with liquid nitrogen in 2-3 week cycles. Cantharidin application for molluscum. Observation is reasonable as most resolve spontaneously via host immunity within 12-24 months.",
+        "red_flags": "Extensive, giant, or disfiguring warts suggests cellular immunodeficiency (e.g., WHIM syndrome, HIV)."
+    },
+    "Vitiligo_and_Pigmentation": {
+        "tier": "Tier 2",
+        "urgency": "Routine Care (Pigmentary Disorder)",
+        "clinical_name": "Vitiligo & Pigmentary Alterations",
+        "icd10": "L80 / L81.9",
+        "pathophysiology": "Vitiligo: Autoimmune destruction of melanocytes driven by CD8+ cytotoxic T-lymphocytes producing IFN-γ and CXCL10. Melasma / Post-inflammatory hyperpigmentation (PIH): Melanocyte hyperactivity triggered by UV light, estrogen, and inflammation.",
+        "morphology": {
+            "hallmarks": "Vitiligo: Completely depigmented (chalk-white or porcelain-white) macules and patches with well-defined convex borders, classically periorificial, acral, and symmetric. Leukotrichia (white hair) indicates follicular melanocyte loss.",
+            "fitzpatrick_light": "Chalk-white patches visible under UV light; may be subtle on fair skin without tanning.",
+            "fitzpatrick_dark": "Striking, high-contrast porcelain-white macules causing substantial psychosocial distress; koebnerization common at sites of friction."
+        },
+        "diagnostic_workup": [
+            "Wood's lamp examination (365 nm): emits bright blue-white fluorescence, confirming complete absence of melanin (distinguishes vitiligo from hypopigmented tinea versicolor or pityriasis alba).",
+            "Screen for associated autoimmune disorders: TSH, free T4, anti-TPO antibodies (autoimmune thyroiditis present in up to 20%), fasting glucose, and vitamin B12.",
+            "Dermoscopic assessment for active vs stable disease markers (confetti-like depigmentation = rapidly progressive)."
+        ],
+        "management": "Topical high-potency corticosteroids or calcineurin inhibitors (tacrolimus 0.1%) for localized disease. Topical JAK inhibitor (ruxolitinib 1.5% cream) for non-segmental vitiligo. Narrowband UVB phototherapy for generalized vitiligo. Strict sun protection on depigmented skin.",
+        "red_flags": "Depigmented skin has zero melanin UV protection, predisposing to acute sunburns and actinic damage."
+    }
+}
+
+OUTPUT_PATH = r"c:\Users\kvcsu_ht23nk8\OneDrive\Desktop\all_Projects\BTech_Project\skin-disease\BTech_Project\web_app\backend\core\clinical_knowledge_corpus.json"
+
+os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+    json.dump(corpus, f, indent=4)
+
+print(f"[OK] Generated comprehensive clinical corpus for {len(corpus)} disease classes at:")
+print(f"     {OUTPUT_PATH}")
+

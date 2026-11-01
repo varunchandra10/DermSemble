@@ -1,0 +1,7 @@
+Phototype,Samples,Top-1 Acc (%),Top-3 Recall (%),Macro-F1 (%),Tier 1 Acc (%),Melanoma N,Melanoma Recall (%)
+Type I (Very Light),1006,79.92,91.05,67.41,71.33,149,82.55
+Type II (Light),553,78.12,90.78,65.5,72.46,51,82.35
+Type III (Intermediate),577,76.26,88.21,70.05,75.86,82,82.93
+Type IV (Tan),652,74.69,88.34,67.14,63.86,57,84.21
+Type V (Brown),918,73.2,89.43,70.01,69.53,102,79.41
+Type VI (Dark),893,71.44,87.57,66.93,67.0,123,81.3

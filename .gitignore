@@ -1,0 +1,62 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Caches and virtual environments
+.venv/
+env/
+venv/
+ENV/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Package distributions & Node dependencies
+build/
+dist/
+node_modules/
+*.egg-info/
+
+# Local configuration & IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Large clinical datasets (raw & preprocessed images, 1.2+ GB)
+datasets/
+
+# PyTorch checkpoints and oversized model weights (>100MB)
+*.pt
+*.pth
+*.npz
+
+Models/*
+!Models/onnx/
+Models/onnx/*
+!Models/onnx/*_int8.onnx
+!Models/onnx/production_deployment_manifest.json
+
+!Models/ensemble/
+Models/ensemble/*
+!Models/ensemble/*.json
+!Models/ensemble/*.csv
+!Models/ensemble/*.pkl
+
+!Models/logs/
+
+# Temporary inference heatmaps
+web_app/backend/static/heatmaps/*.png
+!web_app/backend/static/heatmaps/.gitkeep
+
+# Excluded legacy documentation drafts
+docs/paper.md
+docs/Paper.md
+docs/PAPER.md
+docs/RE_IMPLEMENTATION_PLAN.md
+docs/re_implementation_plan.md
+docs/readme.md

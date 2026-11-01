@@ -1,0 +1,97 @@
+{
+    "recommended_threshold_theta": 0.5,
+    "optimal_alpha_melanoma": 1.85,
+    "automated_coverage_pct": 79.56,
+    "automated_accuracy_pct": 85.11,
+    "referral_rate_pct": 20.44,
+    "tradeoff_grid": [
+        {
+            "Threshold (Theta)": "0.00",
+            "Coverage (%)": "100.0%",
+            "Automated Diagnoses": "4,599",
+            "Referred to Specialist": "0",
+            "Automated Accuracy (%)": "75.28%",
+            "Accuracy Gain (\u0394)": "0.00%"
+        },
+        {
+            "Threshold (Theta)": "0.25",
+            "Coverage (%)": "97.0%",
+            "Automated Diagnoses": "4,463",
+            "Referred to Specialist": "136",
+            "Automated Accuracy (%)": "76.67%",
+            "Accuracy Gain (\u0394)": "+1.16%"
+        },
+        {
+            "Threshold (Theta)": "0.30",
+            "Coverage (%)": "94.2%",
+            "Automated Diagnoses": "4,330",
+            "Referred to Specialist": "269",
+            "Automated Accuracy (%)": "78.34%",
+            "Accuracy Gain (\u0394)": "+2.82%"
+        },
+        {
+            "Threshold (Theta)": "0.35",
+            "Coverage (%)": "90.9%",
+            "Automated Diagnoses": "4,180",
+            "Referred to Specialist": "419",
+            "Automated Accuracy (%)": "80.02%",
+            "Accuracy Gain (\u0394)": "+4.51%"
+        },
+        {
+            "Threshold (Theta)": "0.40",
+            "Coverage (%)": "87.1%",
+            "Automated Diagnoses": "4,007",
+            "Referred to Specialist": "592",
+            "Automated Accuracy (%)": "81.53%",
+            "Accuracy Gain (\u0394)": "+6.02%"
+        },
+        {
+            "Threshold (Theta)": "0.45",
+            "Coverage (%)": "83.2%",
+            "Automated Diagnoses": "3,826",
+            "Referred to Specialist": "773",
+            "Automated Accuracy (%)": "83.48%",
+            "Accuracy Gain (\u0394)": "+7.97%"
+        },
+        {
+            "Threshold (Theta)": "0.50",
+            "Coverage (%)": "79.6%",
+            "Automated Diagnoses": "3,659",
+            "Referred to Specialist": "940",
+            "Automated Accuracy (%)": "85.11%",
+            "Accuracy Gain (\u0394)": "+9.59%"
+        },
+        {
+            "Threshold (Theta)": "0.55",
+            "Coverage (%)": "75.9%",
+            "Automated Diagnoses": "3,492",
+            "Referred to Specialist": "1,107",
+            "Automated Accuracy (%)": "86.17%",
+            "Accuracy Gain (\u0394)": "+10.65%"
+        },
+        {
+            "Threshold (Theta)": "0.60",
+            "Coverage (%)": "72.0%",
+            "Automated Diagnoses": "3,310",
+            "Referred to Specialist": "1,289",
+            "Automated Accuracy (%)": "87.82%",
+            "Accuracy Gain (\u0394)": "+12.31%"
+        },
+        {
+            "Threshold (Theta)": "0.65",
+            "Coverage (%)": "68.6%",
+            "Automated Diagnoses": "3,154",
+            "Referred to Specialist": "1,445",
+            "Automated Accuracy (%)": "88.87%",
+            "Accuracy Gain (\u0394)": "+13.35%"
+        },
+        {
+            "Threshold (Theta)": "0.70",
+            "Coverage (%)": "65.0%",
+            "Automated Diagnoses": "2,990",
+            "Referred to Specialist": "1,609",
+            "Automated Accuracy (%)": "89.97%",
+            "Accuracy Gain (\u0394)": "+14.45%"
+        }
+    ]
+}

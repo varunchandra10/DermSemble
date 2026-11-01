@@ -1,0 +1,22 @@
+graph LR
+    classDef conv fill:#eff6ff,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef swin fill:#faf5ff,stroke:#9333ea,stroke-width:2px,color:#6b21a8
+    classDef fusion fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#065f46
+
+    subgraph CONVNEXT ["ConvNeXt-Tiny (CNN Backbone - 42% Weight)"]
+        C1["Input 384x384"]:::conv --> C2["Stem: 4x4 Patchify"]:::conv
+        C2 --> C3["4 ResNet-style Stages<br/>7x7 Depthwise Convolutions"]:::conv
+        C3 --> C4["Inverted Bottleneck + GELU"]:::conv
+        C4 --> C5["Local Margin Texture<br/>Follicular Plugs & Networks"]:::conv
+    end
+
+    subgraph SWIN ["Swin-Transformer Tiny (ViT Backbone - 58% Weight)"]
+        S1["Input 384x384"]:::swin --> S2["Patch Partition: 4x4"]:::swin
+        S2 --> S3["Hierarchical Transformer Stages"]:::swin
+        S3 --> S4["Shifted Window Self-Attention<br/>W=7x7 Local + Cross-Window"]:::swin
+        S4 --> S5["Global Lesion Asymmetry<br/>Erythematous Halos & Plaque Spread"]:::swin
+    end
+
+    C5 --> M["Soft-Voting Ensemble<br/>0.42 * CNN + 0.58 * ViT<br/>Top-1: 75.52% | Top-3: 89.28%"]:::fusion
+    S5 --> M
+

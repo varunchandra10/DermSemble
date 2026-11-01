@@ -1,0 +1,26 @@
+[
+    {
+        "Architecture": "ConvNeXt-Tiny",
+        "PyTorch .pth": "323.3 MB",
+        "ONNX FP32": "107.8 MB",
+        "ONNX INT8": "27.3 MB",
+        "Reduction (%)": "91.5%",
+        "Compression Factor": "11.8x"
+    },
+    {
+        "Architecture": "Swin-Transformer",
+        "PyTorch .pth": "320.0 MB",
+        "ONNX FP32": "109.0 MB",
+        "ONNX INT8": "29.9 MB",
+        "Reduction (%)": "90.7%",
+        "Compression Factor": "10.7x"
+    },
+    {
+        "Architecture": "COMBINED ENSEMBLE",
+        "PyTorch .pth": "643.3 MB",
+        "ONNX FP32": "216.7 MB",
+        "ONNX INT8": "57.2 MB",
+        "Reduction (%)": "91.1%",
+        "Compression Factor": "11.3x"
+    }
+]

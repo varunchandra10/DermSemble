@@ -1,0 +1,50 @@
+[
+    {
+        "Engine / Runtime": "PyTorch CPU (FP32 Baseline)",
+        "Device": "CPU",
+        "Mean Latency (ms)": 80.2,
+        "P95 Latency (ms)": 85.1,
+        "Throughput (FPS)": 12.5,
+        "Speedup": "1.0x (Ref)"
+    },
+    {
+        "Engine / Runtime": "ONNX Runtime CPU (FP32)",
+        "Device": "CPU",
+        "Mean Latency (ms)": 61.3,
+        "P95 Latency (ms)": 67.4,
+        "Throughput (FPS)": 16.3,
+        "Speedup": "1.3x"
+    },
+    {
+        "Engine / Runtime": "ONNX Runtime CPU (INT8 ConvNeXt)",
+        "Device": "CPU",
+        "Mean Latency (ms)": 261.4,
+        "P95 Latency (ms)": 316.0,
+        "Throughput (FPS)": 3.8,
+        "Speedup": "0.3x"
+    },
+    {
+        "Engine / Runtime": "ONNX Runtime CPU (INT8 Swin-T)",
+        "Device": "CPU",
+        "Mean Latency (ms)": 178.9,
+        "P95 Latency (ms)": 216.9,
+        "Throughput (FPS)": 5.6,
+        "Speedup": "0.4x"
+    },
+    {
+        "Engine / Runtime": "COMBINED ENSEMBLE (INT8 CPU)",
+        "Device": "CPU",
+        "Mean Latency (ms)": 440.3,
+        "P95 Latency (ms)": 535.3,
+        "Throughput (FPS)": 2.3,
+        "Speedup": "Dual Model"
+    },
+    {
+        "Engine / Runtime": "PyTorch AMP (RTX 5050 GPU)",
+        "Device": "GPU",
+        "Mean Latency (ms)": 7.2,
+        "P95 Latency (ms)": 7.9,
+        "Throughput (FPS)": 139.3,
+        "Speedup": "11.2x (Hardware Accel)"
+    }
+]

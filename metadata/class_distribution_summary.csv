@@ -1,0 +1,26 @@
+Class ID,Unified Disease Class,Clinical Tier,Triage Urgency,Total Images,Percentage,Fitzpatrick Annotated
+12,Malignant_Melanoma,Tier 1,High-Priority Oncology,2818,12.26%,79
+18,Seborrheic_Keratosis,Tier 2,Routine Care,2784,12.11%,0
+2,Atopic_Dermatitis_and_Eczema,Tier 2,Routine Outpatient,2176,9.46%,51
+15,Psoriasis_and_Lichen_Planus,Tier 2,Routine Outpatient,1694,7.37%,98
+13,Melanocytic_Nevi,Tier 2,Routine Screening,1630,7.09%,2
+21,Tinea_and_Fungal_Infections,Tier 2,Routine Outpatient,1554,6.76%,0
+14,Onychomycosis_and_Nail_Disease,Tier 2,Routine Outpatient,1256,5.46%,0
+23,Viral_Warts_and_Molluscum,Tier 2,Routine Outpatient,1200,5.22%,0
+0,Acne_Vulgaris,Tier 2,Routine Outpatient,754,3.28%,0
+19,Systemic_Disease_Manifestations,Tier 1,Urgent Internal Medicine,739,3.21%,0
+22,Vascular_Tumors,Tier 2,Routine Care,734,3.19%,0
+24,Vitiligo_and_Pigmentation,Tier 2,Routine Outpatient,729,3.17%,42
+17,Scabies_and_Infestations,Tier 1,Urgent Public Health,660,2.87%,126
+3,Bullous_Pemphigoid,Tier 1,Urgent Dermatology Referral,544,2.37%,0
+20,Systemic_Lupus_Erythematosus,Tier 1,Urgent Systemic Consultation,519,2.26%,0
+7,Cutaneous_Vasculitis,Tier 1,Urgent Systemic Consultation,510,2.22%,0
+9,Herpes_HPV_and_STDs,Tier 2,Prompt Outpatient Treatment,487,2.12%,0
+8,Exanthems_and_Drug_Eruptions,Tier 1,Urgent Toxicology/Allergy,468,2.04%,0
+1,Alopecia_Areata_and_Hair_Loss,Tier 2,Routine Outpatient,375,1.63%,0
+6,Contact_Dermatitis,Tier 2,Routine Outpatient,359,1.56%,42
+5,Chronic_Urticaria,Tier 2,Routine Outpatient,296,1.29%,34
+4,Cellulitis,Tier 1,Emergency Infection Protocol,280,1.22%,0
+16,Rosacea,Tier 2,Routine Outpatient,211,0.92%,3
+10,Impetigo_and_Bacterial,Tier 2,Prompt Outpatient Treatment,171,0.74%,0
+11,Kaposi_Sarcoma,Tier 1,High-Priority Systemic,43,0.19%,43

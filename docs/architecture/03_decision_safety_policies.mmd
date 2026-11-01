@@ -1,0 +1,17 @@
+graph TD
+    classDef start fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e3a8a
+    classDef math fill:#fefce8,stroke:#ca8a04,stroke-width:2px,color:#713f12
+    classDef tier1 fill:#fee2e2,stroke:#ef4444,stroke-width:2px,color:#991b1b
+    classDef tier2 fill:#e0e7ff,stroke:#6366f1,stroke-width:2px,color:#3730a3
+    classDef abstain fill:#ffedd5,stroke:#f97316,stroke-width:2px,color:#9a3412
+
+    A["Raw Ensemble Softmax Distribution P"]:::start --> B["Check Tier 1 Oncology Classes<br/>(Melanoma, Basal Cell, Squamous Cell)"]:::math
+    B --> C["Apply Acuity Multiplier: P_mel = P_mel * 1.85<br/>Re-normalize Probability Simplex"]:::math
+    C --> D{"Evaluate Confidence: max(P) >= 0.50 ?"}:::math
+
+    D -->|Above Threshold: max >= 0.50| E{"Is Predicted Class Tier 1 Oncology?"}:::math
+    E -->|Yes| F["RED FLAG: Tier 1 Oncology<br/>Immediate Biopsy & Dermoscopy Protocol"]:::tier1
+    E -->|No| G["BLUE FLAG: Tier 2 Outpatient<br/>Routine Clinical Management"]:::tier2
+
+    D -->|Below Threshold: max < 0.50| H["AMBER FLAG: Clinical Abstention<br/>Uncertain Diagnostic Boundary<br/>Automated Abstention Triggered (Acc: 85.11%)"]:::abstain
+

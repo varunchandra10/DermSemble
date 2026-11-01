@@ -1,0 +1,101 @@
+{
+    "system_name": "DermaVision-AI Clinical Diagnostic Engine",
+    "version": "1.0.0-production",
+    "created_date": "2026-11-01",
+    "input_spec": {
+        "spatial_resolution": [
+            384,
+            384
+        ],
+        "channels": 3,
+        "color_mode": "RGB",
+        "normalization_mean": [
+            0.485,
+            0.456,
+            0.406
+        ],
+        "normalization_std": [
+            0.229,
+            0.224,
+            0.225
+        ]
+    },
+    "ensemble_weights": {
+        "convnext_tiny": 0.42,
+        "swin_transformer_tiny": 0.58
+    },
+    "model_binaries": {
+        "convnext_int8_onnx": "Models\\onnx\\convnext_tiny_int8.onnx",
+        "swin_int8_onnx": "Models\\onnx\\swin_tiny_int8.onnx",
+        "convnext_fp32_onnx": "Models\\onnx\\convnext_tiny_fp32.onnx",
+        "swin_fp32_onnx": "Models\\onnx\\swin_tiny_fp32.onnx"
+    },
+    "decision_policies": {
+        "melanoma_safety_multiplier_alpha": 1.85,
+        "equivalent_melanoma_threshold_tau": 0.541,
+        "clinical_abstention_threshold_theta": 0.5,
+        "recommended_action_on_abstain": "REFER TO DERMATOLOGIST (Diagnostic Uncertainty)"
+    },
+    "benchmark_performance": {
+        "test_top1_accuracy": 75.52,
+        "test_top3_recall": 89.28,
+        "test_macro_f1": 70.55,
+        "gpu_latency_ms": 7.2,
+        "cpu_int8_latency_ms": 440.3,
+        "total_int8_storage_mb": 57.2
+    },
+    "label_map": {
+        "0": "Acne_Vulgaris",
+        "1": "Alopecia_Areata_and_Hair_Loss",
+        "2": "Atopic_Dermatitis_and_Eczema",
+        "3": "Bullous_Pemphigoid",
+        "4": "Cellulitis",
+        "5": "Chronic_Urticaria",
+        "6": "Contact_Dermatitis",
+        "7": "Cutaneous_Vasculitis",
+        "8": "Exanthems_and_Drug_Eruptions",
+        "9": "Herpes_HPV_and_STDs",
+        "10": "Impetigo_and_Bacterial",
+        "11": "Kaposi_Sarcoma",
+        "12": "Malignant_Melanoma",
+        "13": "Melanocytic_Nevi",
+        "14": "Onychomycosis_and_Nail_Disease",
+        "15": "Psoriasis_and_Lichen_Planus",
+        "16": "Rosacea",
+        "17": "Scabies_and_Infestations",
+        "18": "Seborrheic_Keratosis",
+        "19": "Systemic_Disease_Manifestations",
+        "20": "Systemic_Lupus_Erythematosus",
+        "21": "Tinea_and_Fungal_Infections",
+        "22": "Vascular_Tumors",
+        "23": "Viral_Warts_and_Molluscum",
+        "24": "Vitiligo_and_Pigmentation"
+    },
+    "clinical_tiers": {
+        "Chronic_Urticaria": "Tier 2",
+        "Contact_Dermatitis": "Tier 2",
+        "Kaposi_Sarcoma": "Tier 1",
+        "Malignant_Melanoma": "Tier 1",
+        "Melanocytic_Nevi": "Tier 2",
+        "Psoriasis_and_Lichen_Planus": "Tier 2",
+        "Rosacea": "Tier 2",
+        "Scabies_and_Infestations": "Tier 1",
+        "Atopic_Dermatitis_and_Eczema": "Tier 2",
+        "Vitiligo_and_Pigmentation": "Tier 2",
+        "Seborrheic_Keratosis": "Tier 2",
+        "Vascular_Tumors": "Tier 2",
+        "Acne_Vulgaris": "Tier 2",
+        "Bullous_Pemphigoid": "Tier 1",
+        "Cellulitis": "Tier 1",
+        "Impetigo_and_Bacterial": "Tier 2",
+        "Exanthems_and_Drug_Eruptions": "Tier 1",
+        "Alopecia_Areata_and_Hair_Loss": "Tier 2",
+        "Herpes_HPV_and_STDs": "Tier 2",
+        "Systemic_Lupus_Erythematosus": "Tier 1",
+        "Onychomycosis_and_Nail_Disease": "Tier 2",
+        "Systemic_Disease_Manifestations": "Tier 1",
+        "Tinea_and_Fungal_Infections": "Tier 2",
+        "Cutaneous_Vasculitis": "Tier 1",
+        "Viral_Warts_and_Molluscum": "Tier 2"
+    }
+}

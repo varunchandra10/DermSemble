@@ -1,0 +1,36 @@
+graph TD
+    classDef input fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e3a8a
+    classDef prep fill:#f0fdf4,stroke:#22c55e,stroke-width:2px,color:#14532d
+    classDef model fill:#faf5ff,stroke:#a855f7,stroke-width:2px,color:#581c87
+    classDef fusion fill:#fff7ed,stroke:#f97316,stroke-width:2px,color:#7c2d12
+    classDef safety fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#7f1d1d
+    classDef output fill:#f0fdfa,stroke:#14b8a6,stroke-width:2px,color:#134e4a
+
+    subgraph STAGE1 ["1. Clinical Ingestion & Optical Standardization"]
+        A["Patient Skin Photograph<br/>(RGB Raw Ingestion)"]:::input --> B["DullRazor Hair Inpainting<br/>(4-Dir Kernels + Telea)"]:::prep
+        B --> C["Minkowski p=6 Shades-of-Gray<br/>(Color Constancy Norm)"]:::prep
+        C --> D["Standardized Tensor<br/>(384 x 384 x 3 Native)"]:::prep
+    end
+
+    subgraph STAGE2 ["2. Dual INT8 ONNX Deep Learning Engines"]
+        D -->|High-Frequency Texture| E["ConvNeXt-Tiny INT8<br/>(28.5 MB, 7x7 Depthwise CNN)"]:::model
+        D -->|Global Plaque Asymmetry| F["Swin-Transformer INT8<br/>(28.7 MB, Shifted Window ViT)"]:::model
+        E --> G["Probability Vector P_conv<br/>(25 Classes, Calibrated)"]:::model
+        F --> H["Probability Vector P_swin<br/>(25 Classes, Calibrated)"]:::model
+    end
+
+    subgraph STAGE3 ["3. Decision-Theoretic Calibration Engine"]
+        G --> I["Calibrated Soft Voting<br/>P_ens = 0.42 * P_conv + 0.58 * P_swin"]:::fusion
+        H --> I
+        I --> J["Melanoma Acuity Multiplier<br/>alpha = 1.85 on Tier 1 Cancer"]:::fusion
+        J --> K{"Uncertainty Gate<br/>max(P) >= 0.50 ?"}:::safety
+    end
+
+    subgraph STAGE4 ["4. Clinical Triage & Visual Attribution"]
+        K -->|Conf >= 0.50| L["Automated Triage<br/>Tier 1 Urgent vs Tier 2 Routine"]:::output
+        K -->|Conf < 0.50| M["Clinical Abstention<br/>Biopsy & Dermoscopy Advised"]:::safety
+        E -.->|Conv Layer 4| N["Dual-Stream Grad-CAM<br/>Cross-Attribution Service"]:::output
+        F -.->|Norm Layer| N
+        N --> O["Transparent Saliency Heatmap<br/>Spatial Evidence Overlay"]:::output
+    end
+

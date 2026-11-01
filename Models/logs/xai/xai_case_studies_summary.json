@@ -1,0 +1,66 @@
+{
+    "total_cases_audited": 4,
+    "mean_spatial_correlation_r": 0.5284,
+    "cases": [
+        {
+            "case_id": 23,
+            "title": "Case 1: Malignant Melanoma (Dual Concordance on Lethal Oncology)",
+            "theme": "Oncology Safety & Margin Irregularity",
+            "ground_truth": "Malignant_Melanoma",
+            "phototype": "Type IV (Tan)",
+            "clinical_tier": "Tier 1",
+            "convnext_pred": "Malignant_Melanoma",
+            "convnext_conf": 0.9391,
+            "swin_pred": "Malignant_Melanoma",
+            "swin_conf": 0.8238,
+            "ensemble_pred": "Malignant_Melanoma",
+            "ensemble_conf": 0.8722,
+            "spatial_correlation_r": 0.6234
+        },
+        {
+            "case_id": 41,
+            "title": "Case 2: Ensemble Error Correction (Context Overrules Local Excoriation)",
+            "theme": "Ensemble Synergy & Robustness",
+            "ground_truth": "Psoriasis_and_Lichen_Planus",
+            "phototype": "Type V (Brown)",
+            "clinical_tier": "Tier 2",
+            "convnext_pred": "Scabies_and_Infestations",
+            "convnext_conf": 0.3205,
+            "swin_pred": "Psoriasis_and_Lichen_Planus",
+            "swin_conf": 0.4456,
+            "ensemble_pred": "Psoriasis_and_Lichen_Planus",
+            "ensemble_conf": 0.3127,
+            "spatial_correlation_r": 0.0538
+        },
+        {
+            "case_id": 3160,
+            "title": "Case 3: Diffuse Annular Spread (Tinea Fungal Infection)",
+            "theme": "Long-Range Global Spatial Context",
+            "ground_truth": "Tinea_and_Fungal_Infections",
+            "phototype": "Type VI (Dark)",
+            "clinical_tier": "Tier 2",
+            "convnext_pred": "Tinea_and_Fungal_Infections",
+            "convnext_conf": 0.5924,
+            "swin_pred": "Tinea_and_Fungal_Infections",
+            "swin_conf": 0.8365,
+            "ensemble_pred": "Tinea_and_Fungal_Infections",
+            "ensemble_conf": 0.734,
+            "spatial_correlation_r": 0.7236
+        },
+        {
+            "case_id": 114,
+            "title": "Case 4: Melanin Equity (Malignant Melanoma on Type VI Dark Skin)",
+            "theme": "Algorithmic Demographic Fairness",
+            "ground_truth": "Malignant_Melanoma",
+            "phototype": "Type VI (Dark)",
+            "clinical_tier": "Tier 1",
+            "convnext_pred": "Malignant_Melanoma",
+            "convnext_conf": 0.9225,
+            "swin_pred": "Malignant_Melanoma",
+            "swin_conf": 0.9377,
+            "ensemble_pred": "Malignant_Melanoma",
+            "ensemble_conf": 0.9313,
+            "spatial_correlation_r": 0.713
+        }
+    ]
+}
