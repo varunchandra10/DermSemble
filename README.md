@@ -68,11 +68,11 @@ The dual-stream ensemble was validated across diagnostic accuracy, clinical risk
 
 > 📺 **Interactive System Demonstration:**
 > 
-> [![Dermsemble Video Walkthrough](https://img.shields.io/badge/Demo_Video-Watch_Full_Walkthrough-blue?style=for-the-badge&logo=youtube&logoColor=white)](./dermsemble_project.mp4)
+> [![Dermsemble Video Walkthrough](https://img.shields.io/badge/Demo_Video-Watch_on_Google_Drive-blue?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/drive/folders/1XgjXtMMm5ytCRYRRtLphWFys7WJqWQSH?usp=sharing)
 > 
 > *A full video demonstration walking through the real-time 3D WebGL neural digital twin, DullRazor optical conditioning, automated 3-tier triage, and Grad-CAM spatial cross-attribution.*
 > 
-> Direct Video Link: [`dermsemble_project.mp4`](./dermsemble_project.mp4)
+> 🔗 **Google Drive Video Link:** [Dermsemble Interactive Walkthrough Video](https://drive.google.com/drive/folders/1XgjXtMMm5ytCRYRRtLphWFys7WJqWQSH?usp=sharing)
 
 ---
 

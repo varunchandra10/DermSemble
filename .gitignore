@@ -35,6 +35,12 @@ datasets/
 *.pth
 *.npz
 
+# Large local media / video files (hosted via Google Drive)
+*.mp4
+*.avi
+*.mov
+*.mkv
+
 Models/*
 !Models/onnx/
 Models/onnx/*
